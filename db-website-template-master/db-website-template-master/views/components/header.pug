@@ -1,0 +1,87 @@
+mixin navItem(item)
+    a(x-route=item.name href=langHref + item.href
+        x-on:click="$data.currentPage = '" + item.page + "';"
+        :class="{'text-sky-700 dark:text-sky-400': $data.currentPage == '"+item.page+"', 'text-zinc-600 dark:text-zinc-400': $data.currentPage != '"+item.page+"'}"
+        class="font-medium hover:text-zinc-400 dark:hover:text-zinc-500")=item.name
+
+mixin navDropItem(item, isSub)
+    - let onClick ="$data.currentPage = '" + item.page + "'; $data.open = false"
+    if (isSub)
+        - onClick += "; $data.openSubMenu = false"
+    a(x-route=item.name href=langHref + item.href x-on:click=onClick
+        :class="{'text-sky-700 dark:text-sky-400': $data.currentPage == '"+item.page+"', 'text-zinc-600 dark:text-zinc-400': $data.currentPage != '"+item.page+"'}"
+        class="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700 dark:hover:text-zinc-300")=item.name
+
+mixin navDrop(item)
+    div(x-data="{ open: false }" x-on:click.outside="open = false;")
+        button(@click="open = !open" type="button" class="flex items-center w-full text-zinc-600 hover:text-zinc-400 font-medium dark:text-zinc-400 dark:hover:text-zinc-500")=item.name
+            svg(fill="currentColor" viewBox="0 0 20 20" class="ml-1 w-4 h-4" :class="{'rotate-180': open}")
+                path(fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd")
+        div(x-cloak x-show="open" x-transition
+        class="top-full z-10 rounded-md before:absolute before:-top-5 before:left-0 before:w-full before:h-5 w-full bg-white p-2 sm:w-48 sm:transition-all transition-[opacity,margin] sm:absolute sm:shadow-md sm:duration-300 dark:bg-zinc-800")
+            each child in item.child
+                if child.child
+                    +navDropSubDrop(child)
+                else
+                    +navDropItem(child, false)
+
+mixin navDropSubDrop(item)
+    div(class="relative sm:flex sm:items-center sm:gap-x-3.5" x-data="{ openSubMenu: false }" x-on:click.outside="openSubMenu = false")
+        button(@click="openSubMenu = !openSubMenu" type="button" class="flex justify-between w-full items-center text-sm text-zinc-800 rounded-md py-2 px-3 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-zinc-300")=item.name
+            svg(class="sm:-rotate-90 ml-2 w-2.5 h-2.5" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg")
+                path(d="M2 5L8.16086 10.6869C8.35239 10.8637 8.64761 10.8637 8.83914 10.6869L15 5" stroke="currentColor" stroke-width="2" stroke-linecap="round")
+        div(x-cloak x-show="openSubMenu" x-transition class="sm:mt-2 sm:mx-2.5 top-0 left-full z-10 sm:rounded-md before:absolute before:top-0 before:-left-5 before:w-5 before:h-full after:absolute after:top-0 after:-right-5 after:w-5 after:h-full w-full bg-white p-2 sm:w-48 sm:transition-all transition-[opacity,margin] sm:absolute sm:shadow-md sm:duration-300 dark:bg-zinc-800")
+            each child in item.child
+                +navDropItem(child, true)
+
+header(class="sticky top-0 relative flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-full bg-white text-sm py-2 dark:bg-zinc-800 border-b border-zinc-700")
+    nav(class="w-full mx-auto px-4 sm:flex sm:items-center sm:justify-between" x-data="{ openMenu: false, openDB: false, currentPage: '" + page + "'}")
+        div(class="flex flex-wrap md:flex-nowrap justify-between items-center w-full")
+            div(class="flex md:flex-none")
+                img(class="mr-3 h-10" src="https://www.kloenlansfiel.com/img/projects/icons/alchemy-stars.webp" alt="Alchemy Stars")
+                div(class="flex flex-col relative")
+                    span(class="text-md font-semibold whitespace-nowrap dark:text-white")=nav.title
+                    button(@click="openDB = !openDB" type="button" class="flex text-xs items-center w-full text-zinc-600 hover:text-zinc-400 font-medium dark:text-zinc-400 dark:hover:text-zinc-500") Switch database
+                        svg(fill="currentColor" viewBox="0 0 20 20" class="ml-1 w-4 h-4" :class="{'rotate-180': openDB}")
+                            path(fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd")
+            div(class="flex md:flex-none md:order-2 gap-2")
+                button(id="theme-toggle" type="button" onclick="toggleTheme()" class="text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-lg text-sm p-2.5")
+                    svg(id="theme-toggle-svg-dark" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg")
+                        path(d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z")
+                    svg(id="theme-toggle-svg-light" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg")
+                        path(d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd")
+                if locales.length > 0
+                    div(class="py-2 relative" x-data="{ open: false }" x-on:click.outside="open = false")
+                        button(x-on:click="open = !open" class="uppercase flex items-center w-full text-zinc-600 hover:text-zinc-400 font-medium dark:text-zinc-400 dark:hover:text-zinc-500")
+                            | !{lang}
+                            svg(fill="currentColor" viewBox="0 0 20 20" class="ml-1 w-4 h-4" :class="{'rotate-180': open}")
+                                path(fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd")
+                        div(x-cloak x-show="open"
+                            class="p-2 absolute right-0 w-full mt-2 origin-top-right rounded-md shadow-lg z-10 w-auto text-base list-none bg-white shadow dark:bg-zinc-800")
+                            each locale, code in locales
+                                - let clazz
+                                if lang === code
+                                    - clazz = "cursor-pointer flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-blue-300"
+                                else
+                                    - clazz = "cursor-pointer flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-zinc-800 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-zinc-300"
+                                span(class=clazz onclick="switchLanguage('" + lang + "'," + JSON.stringify(locales) + ", '" + code + "')") !{locale}
+                div(class="sm:hidden")
+                    button(@click="openMenu = !openMenu" type="button" class="p-2 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-zinc-700 shadow-sm align-middle hover:bg-zinc-50 transition-all text-sm dark:bg-zinc-800 dark:hover:bg-slate-800 dark:border-zinc-700 dark:text-zinc-400 dark:hover:text-white")
+                        svg(x-cloak x-show="!openMenu" class="w-4 h-4" width="16" height="16" fill="currentColor" viewBox="0 0 16 16")
+                            path(fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z")
+                        svg(x-cloak x-show="openMenu" class="w-4 h-4" width="16" height="16" fill="currentColor" viewBox="0 0 16 16")
+                            path(d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z")
+            div(x-cloak x-transition :class="{'hidden': !openMenu}" class="basis-full grow sm:block")
+                div(class="flex flex-col gap-5 mt-5 sm:flex-row sm:items-center sm:justify-start sm:mt-0 sm:ml-10")
+                    each item in nav.header
+                        if item.child
+                            +navDrop(item)
+                        else
+                            +navItem(item)
+            div(x-cloak x-show="openDB" x-transition x-on:click.outside="openDB = false" class="top-full z-10 rounded-md before:absolute before:left-0 before:w-full before:h-5 bg-white p-2 w-80 sm:transition-all transition-[opacity,margin] absolute sm:shadow-md sm:duration-300 dark:bg-zinc-800")
+                a(class="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-zinc-800 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-zinc-300" href="https://revivedwitch.kloenlansfiel.com")
+                    img(class="mr-3 h-10" src="https://www.kloenlansfiel.com/img/projects/icons/revived-witch.webp" alt="Revived Witch")
+                    | Revived Witch DB - Global/KR
+                a(class="flex items-center gap-x-3.5 py-2 px-3 rounded-md text-sm text-zinc-800 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-zinc-300" href="https://rwcndb.kloenlansfiel.com")
+                    img(class="mr-3 h-10" src="https://www.kloenlansfiel.com/img/projects/icons/revived-witch.webp" alt="Revived Witch")
+                    | Revived Witch DB - CN

@@ -1,0 +1,33 @@
+{
+  "name": "new-frontend",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "deps:update": "npx npm-check-updates -u && npm install",
+    "monitor": "nodemon ./bin/www",
+    "postinstall": "gulp postinstall",
+    "start": "node ./bin/www",
+    "tailwindcss": "npx tailwindcss -o public/stylesheets/styles.css --minify"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.6",
+    "debug": "~4.3.4",
+    "express": "~4.18.1",
+    "http-errors": "~2.0.0",
+    "morgan": "~1.10.0",
+    "pug": "^3.0.2"
+  },
+  "devDependencies": {
+    "alpinejs": "^3.10.3",
+    "autoprefixer": "^10.4.9",
+    "cssnano": "^5.1.13",
+    "gulp": "^4.0.2",
+    "gulp-rename": "^2.0.0",
+    "list.js": "^2.3.1",
+    "nodemon": "^2.0.19",
+    "nprogress": "^0.2.0",
+    "postcss": "^8.4.16",
+    "tailwind-scrollbar": "^2.0.1",
+    "tailwindcss": "^3.1.8"
+  }
+}
